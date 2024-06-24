@@ -1,0 +1,43 @@
+name: admin-api-test
+
+on:
+  pull_request:
+    paths:
+      - 'admin-api/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    environment: dev
+    env:
+      # secrets
+      CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+      # variables
+      CACHE_ORGS: ${{ vars.CACHE_ORGS }}
+      CORS_ALLOWED_ORIGINS: ${{ vars.CORS_ALLOWED_ORIGINS }}
+      DATABASE_NAME: ${{ vars.DATABASE_NAME }}
+      DEFAULT_REGENERATION_INTERVAL_MINUTES: ${{ vars.DEFAULT_REGENERATION_INTERVAL_MINUTES }}
+      DEVICEID_MAX_AGE_DAYS: ${{ vars.DEVICEID_MAX_AGE_DAYS }}
+      HOST_NAME: ${{ vars.HOST_NAME }}
+      JWT_EXPIRATION_SECONDS: ${{ vars.JWT_EXPIRATION_SECONDS }}
+      KAZUKU_ENV: ${{ vars.KAZUKU_ENV }}
+      MONGODB_URL: ${{ vars.MONGODB_URL }}
+      PORT: ${{ vars.PORT }}
+      REFRESH_EXPIRATION_DAYS: ${{ vars.REFRESH_EXPIRATION_DAYS }}
+      SALT_WORK_FACTOR: ${{ vars.SALT_WORK_FACTOR }}
+    steps:
+      - name: Get code
+        uses: actions/checkout@v4
+      - name: Npm install
+        working-directory: admin-api
+        run: npm ci
+      - name: Run tests
+        id: run-tests
+        working-directory: admin-api
+        run: npm run test:ci
+      - name: Upload test report on failure
+        if: failure() && steps.run-tests.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-report
+          path: ./admin-api/test-results.json
