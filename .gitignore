@@ -34,3 +34,6 @@ development.json
 !server/bin/www.js
 common/
 test-results.json
+gha-creds-*.json
+gha-kubeconfig-*
+

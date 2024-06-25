@@ -3,7 +3,7 @@ name: admin-api-deploy
 on:
   push:
     branches:
-      - feature/matrix-rewrite # todo: change to dev once we merge feature/matrix-rewrite into dev
+      - dev
     paths:
       - 'admin-api/**'
 
