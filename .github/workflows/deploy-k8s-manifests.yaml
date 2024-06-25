@@ -27,12 +27,12 @@ jobs:
           project_id: 'kazuku'
           workload_identity_provider: 'projects/297600345242/locations/global/workloadIdentityPools/github/providers/kazuku'
 
-#      - name: Get GKE credentials
-#        id: 'get-credentials'
-#        uses: 'google-github-actions/get-gke-credentials@v2'
-#        with:
-#          cluster_name: 'kazuku-preprod'
-#          location: 'us-central1'
+      - name: Get GKE credentials
+        id: 'get-credentials'
+        uses: 'google-github-actions/get-gke-credentials@v2'
+        with:
+          cluster_name: 'kazuku-preprod'
+          location: 'us-central1'
 
       - name: Apply k8s manifests in GCP
         run: kubectl apply -f k8s
