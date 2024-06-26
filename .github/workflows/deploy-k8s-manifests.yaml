@@ -33,7 +33,6 @@ jobs:
         with:
           cluster_name: 'kazuku-preprod'
           location: 'us-central1'
-          credentials: ${{ steps.auth.outputs.credentials }}
 
       - name: Apply k8s manifests in GCP
         run: kubectl apply -f k8s
