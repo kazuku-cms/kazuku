@@ -35,5 +35,4 @@ jobs:
           location: 'us-central1'
 
       - name: Apply k8s manifests in GCP
-        run: kubectl get pods
-        #run: kubectl apply -f k8s
+        run: kubectl apply -f k8s
