@@ -1,0 +1,109 @@
+name: dev-admin-api-test-build-deploy
+
+on:
+  push:
+    branches:
+      - dev
+    paths:
+      - 'admin-api/**'
+
+jobs:
+  # todo: convert this (test) into a reusable template (composite action, I think it's called)
+#  test:
+#    runs-on: ubuntu-latest
+#    environment: dev
+#    env:
+#      # secrets
+#      CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+#      # variables
+#      CACHE_ORGS: ${{ vars.CACHE_ORGS }}
+#      CORS_ALLOWED_ORIGINS: ${{ vars.CORS_ALLOWED_ORIGINS }}
+#      DATABASE_NAME: ${{ vars.DATABASE_NAME }}
+#      DEFAULT_REGENERATION_INTERVAL_MINUTES: ${{ vars.DEFAULT_REGENERATION_INTERVAL_MINUTES }}
+#      DEVICEID_MAX_AGE_DAYS: ${{ vars.DEVICEID_MAX_AGE_DAYS }}
+#      HOST_NAME: ${{ vars.HOST_NAME }}
+#      JWT_EXPIRATION_SECONDS: ${{ vars.JWT_EXPIRATION_SECONDS }}
+#      KAZUKU_ENV: ${{ vars.KAZUKU_ENV }}
+#      MONGODB_URL: ${{ vars.MONGODB_URL }}
+#      PORT: ${{ vars.PORT }}
+#      REFRESH_EXPIRATION_DAYS: ${{ vars.REFRESH_EXPIRATION_DAYS }}
+#      SALT_WORK_FACTOR: ${{ vars.SALT_WORK_FACTOR }}
+#    steps:
+#      - name: Get code
+#        uses: actions/checkout@v4
+#      - name: Npm install
+#        working-directory: admin-api
+#        run: npm ci
+#      - name: Run tests
+#        id: run-tests
+#        working-directory: admin-api
+#        run: npm run test:ci
+#      - name: Upload test report on failure
+#        if: failure() && steps.run-tests.outcome == 'failure'
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: test-report
+#          path: ./admin-api/test-results.json
+
+
+  build:
+#    needs: test
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+      - name: Get code
+        uses: actions/checkout@v4
+      - name: Build docker image
+        working-directory: admin-api
+        run: docker build -t kazuku/kazuku-admin-api .
+      - name: Login to Docker Hub
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+      - name: Push docker image to Docker Hub
+        run: docker push kazuku/kazuku-admin-api
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+      - name: Authenticate with GCP
+        id: 'auth'
+        uses: google-github-actions/auth@v2
+        with:
+          project_id: 'kazuku'
+          workload_identity_provider: 'projects/297600345242/locations/global/workloadIdentityPools/github/providers/kazuku'
+
+      - name: Get GKE credentials
+        id: 'get-credentials'
+        uses: google-github-actions/get-gke-credentials@v2
+        with:
+          cluster_name: 'kazuku-preprod'
+          location: 'us-central1'
+
+      - name: Set up Kustomize
+        run: |-
+          curl -sfLo kustomize https://github.com/kubernetes-sigs/kustomize/releases/download/v3.1.0/kustomize_3.1.0_linux_amd64
+          chmod u+x ./kustomize
+
+#      - name: Replace tokens in k8s yamls
+#        uses: qetza/replacetokens-action@v1
+#        with:
+#          sources: kustomization.yaml # I'm thinking about putting the tokens in the kustomization.yaml file (cd into env folder first)
+#          token-pattern: 'custom'
+#          token-prefix: '#{'
+#          token-suffix: '}'
+#          variables: '[${{ toJSON(vars) }},${{ toJSON(secrets) }}]' # use all env variables & secrets
+#          todo: change the image token (maybe just version) in admin-api-deployment.yaml
+
+
+      # Deploy the Docker image to the GKE cluster
+      - name: Apply k8s manifests to the GKE cluster
+        run: |-
+          # move to the appropriate env directory, then replace the image name in the kustomization.yaml file
+          cd $KAZUKU_ENV # && ./kustomize edit set image kazuku/kazuku-admin-api=kazuku/kazuku-admin-api:$ADMIN_API_VERSION
+          # apply the env kustomization.yaml file to the cluster
+          kubectl kustomize . | kubectl apply -f - 
+
