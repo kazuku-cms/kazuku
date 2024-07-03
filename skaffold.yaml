@@ -1,8 +1,9 @@
 apiVersion: skaffold/v4beta3
 kind: Config
 manifests:
-  rawYaml:
-    - ./k8s/base/* # skaffold uses the base yaml files, which should be configured to run locally (allowing us to ignore kustomize)
+  kustomize:
+    paths:
+      - ./k8s/base # skaffold uses kustomize to build the base yaml files, which should be configured to run locally
 build:
   local:
     push: false
