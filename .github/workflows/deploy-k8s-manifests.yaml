@@ -1,6 +1,7 @@
 name: deploy-k8s-manifests
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - dev
