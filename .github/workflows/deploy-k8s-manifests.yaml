@@ -22,12 +22,6 @@ jobs:
       - name: Get code
         uses: actions/checkout@v4
 
-      - name: what is KAZUKU_ENV?
-        run: echo "$KAZUKU_ENV"
-
-      - name: what is KAZUKU_ENV?
-        run: echo "${{ vars.KAZUKU_ENV }}"
-
       - name: Authenticate with GCP
         id: 'auth'
         uses: google-github-actions/auth@v2
@@ -54,7 +48,7 @@ jobs:
       - name: Apply k8s manifests to the GKE cluster
         run: |-
           # move to the appropriate env directory, then replace the image name in the kustomization.yaml file
-          cd ./k8s/$KAZUKU_ENV # && ./kustomize edit set image kazuku/kazuku-admin-api=kazuku/kazuku-admin-api:$ADMIN_API_VERSION
+          cd ./k8s/${{ vars.KAZUKU_ENV }} # && ./kustomize edit set image kazuku/kazuku-admin-api=kazuku/kazuku-admin-api:$ADMIN_API_VERSION
           # apply the env kustomization.yaml file to the cluster
           kubectl kustomize . | kubectl apply -f -
           
