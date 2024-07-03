@@ -53,7 +53,7 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: traefik-account
-    namespace: default # todo: replace with variable
+    namespace: default # todo: replace with variable via kustomize?
 
 
 

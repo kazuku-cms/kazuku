@@ -46,7 +46,7 @@ jobs:
       - name: Apply k8s manifests to the GKE cluster
         run: |-
           # move to the appropriate env directory, then replace the image name in the kustomization.yaml file
-          cd $KAZUKU_ENV # && ./kustomize edit set image kazuku/kazuku-admin-api=kazuku/kazuku-admin-api:$ADMIN_API_VERSION
+          cd ./k8s/$KAZUKU_ENV # && ./kustomize edit set image kazuku/kazuku-admin-api=kazuku/kazuku-admin-api:$ADMIN_API_VERSION
           # apply the env kustomization.yaml file to the cluster
           kubectl kustomize . | kubectl apply -f -
           
