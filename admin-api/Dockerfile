@@ -25,7 +25,10 @@ FROM node:20-bookworm-slim@sha256:8d26608b65edb3b0a0e1958a0a5a45209524c4df54bbe2
 EXPOSE 3000
 USER node
 WORKDIR /app
+# todo: consider bundling/packaging the build, or at least compressing node_modules (using node-prune, etc)
+COPY --chown=node:node --from=build /app/package.json ./
 COPY --chown=node:node --from=build /app/dist ./
+COPY --chown=node:node --from=build /app/node_modules ./node_modules
 
 # change command to run node directly
 CMD ["node", "./index.js"]

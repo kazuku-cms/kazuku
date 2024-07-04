@@ -7,7 +7,7 @@
   "main": "index.js",
   "scripts": {
     "comment": "if below starts acting up -  https://stackoverflow.com/questions/37979489/how-to-watch-and-reload-ts-node-when-typescript-files-change",
-    "start": "ts-node-dev --poll src/index.ts",
+    "start": "ts-node-dev -r tsconfig-paths/register --poll src/index.ts",
     "clean": "rm -rf dist",
     "tsc": "tsc",
     "build": "npm-run-all -s clean tsc",
@@ -16,11 +16,12 @@
     "test:ci": "jest --json --outputFile=test-results.json"
   },
   "imports": {
-    "#root/*": "./src/*.ts",
-    "#common/*": "./src/common/*.ts",
-    "#features/*": "./src/features/*.ts",
-    "#server/*": "./src/server/*.ts",
-    "#test/*": "./src/test/*.ts"
+    "#root/*": "./*.js",
+    "#common/*": "./common/*.js",
+    "#features/*": "./features/*.js",
+    "#server/*": "./server/*.js",
+    "#test/*": "./test/*.js",
+    "comment": "when running ts-node-dev for local development, we use the tsconfig.json 'paths' property - look there!"
   },
   "jest": {
     "preset": "ts-jest",
@@ -50,6 +51,7 @@
     "moment": "^2.30.1",
     "mongodb": "^6.6.1",
     "ts-node-dev": "^2.0.0",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^5.4.5"
   },
   "devDependencies": {
