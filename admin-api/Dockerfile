@@ -17,6 +17,11 @@ RUN npm ci --omit=dev && npm cache clean --force
 # copy files with correct permissions
 COPY --chown=node:node . .
 
+# debugging stuff here
+RUN ls -la
+RUN cat package.json
+RUN cat tsconfig.json
+
 RUN npm run build:prod
 
 
