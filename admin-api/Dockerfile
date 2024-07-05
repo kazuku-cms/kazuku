@@ -20,8 +20,7 @@ COPY --chown=node:node . .
 
 # debugging stuff here
 RUN ls -la
-RUN cat package.json
-RUN cat tsconfig.json
+RUN ls -ls src/common
 
 RUN npm run build:prod
 
