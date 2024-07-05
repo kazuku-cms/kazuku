@@ -55,6 +55,8 @@ jobs:
       - name: Get code
         uses: actions/checkout@v4
       - name: Build docker image
+        with:
+          node-version: 20
         working-directory: admin-api
         run: docker build -t kazuku/kazuku-admin-api .
       - name: Login to Docker Hub
