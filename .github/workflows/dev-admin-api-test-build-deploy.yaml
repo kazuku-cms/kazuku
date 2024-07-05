@@ -64,7 +64,10 @@ jobs:
       - name: echo some stuff
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-        run: echo "The username is $DOCKER_USERNAME"
+          DEVICEID_MAX_AGE_DAYS: ${{ vars.DEVICEID_MAX_AGE_DAYS }}
+        run: |-
+          echo "The username is $DOCKER_USERNAME"
+          echo "The DEVICEID_MAX_AGE_DAYS is $DEVICEID_MAX_AGE_DAYS"
       - name: Login to Docker Hub
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
