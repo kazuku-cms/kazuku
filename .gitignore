@@ -32,7 +32,7 @@ env-config.js
 config.local.json
 development.json
 !server/bin/www.js
-common/
+/common
 test-results.json
 gha-creds-*.json
 gha-kubeconfig-*
