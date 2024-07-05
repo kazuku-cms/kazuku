@@ -18,14 +18,6 @@ RUN npm ci && npm cache clean --force
 # copy files with correct permissions
 COPY --chown=node:node . .
 
-# debugging stuff here - delete
-RUN ls -la
-RUN ls -la ./src
-RUN ls -la ./src/common/services
-
-# delete me!!!!
-#CMD ["npm", "start"]
-
 RUN npm run build:prod
 
 
