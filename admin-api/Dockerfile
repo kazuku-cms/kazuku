@@ -20,7 +20,7 @@ COPY --chown=node:node . .
 
 # debugging stuff here
 RUN ls -la
-RUN ls -ls src/common
+RUN ls -la src/common
 
 RUN npm run build:prod
 
