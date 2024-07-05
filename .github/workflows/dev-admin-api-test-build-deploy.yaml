@@ -62,7 +62,9 @@ jobs:
         working-directory: admin-api
         run: docker build -t kazuku/kazuku-admin-api .
       - name: echo some stuff
-        run: echo ${{ secrets.DOCKER_USERNAME }}
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        run: echo "The username is $DOCKER_USERNAME"
       - name: Login to Docker Hub
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
