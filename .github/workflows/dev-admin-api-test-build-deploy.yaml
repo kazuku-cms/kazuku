@@ -61,6 +61,15 @@ jobs:
       - name: Build docker image
         working-directory: admin-api
         run: docker build -t kazuku/kazuku-admin-api .
+
+      - name: echo github token
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: echo "GITHUB_TOKEN is $GITHUB_TOKEN"
+      - name: echo github token 2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: echo "GITHUB_TOKEN2 is ${{ env.GITHUB_TOKEN }}"
       - name: echo some stuff
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
