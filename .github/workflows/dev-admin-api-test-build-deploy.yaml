@@ -13,18 +13,9 @@ jobs:
     runs-on: ubuntu-latest
     environment: dev
     steps:
-      - name: echo all secrets
-        env:
-          ALL_SECRETS: ${{ toJson(secrets) }}
-        run: echo "$ALL_SECRETS"
-      
-    
-      - name: Use Node.js version 20
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
       - name: Get code
         uses: actions/checkout@v4
+      
       - name: Build docker image
         working-directory: admin-api
         run: docker build -t kazuku/kazuku-admin-api .
@@ -43,6 +34,9 @@ jobs:
     runs-on: ubuntu-latest
     environment: dev
     steps:
+      - name: Get code
+        uses: actions/checkout@v4
+      
       - name: Authenticate with GCP
         id: 'auth'
         uses: google-github-actions/auth@v2
