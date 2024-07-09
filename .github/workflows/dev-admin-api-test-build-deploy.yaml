@@ -33,6 +33,10 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     environment: dev
+    # Add "id-token" with the intended permissions.
+    permissions:
+      contents: 'read'
+      id-token: 'write'
     steps:
       - name: Get code
         uses: actions/checkout@v4
