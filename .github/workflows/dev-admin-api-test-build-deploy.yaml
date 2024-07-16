@@ -9,65 +9,23 @@ on:
       - 'admin-api/**'
 
 jobs:
-  # todo: convert this (test) into a reusable template (composite action, I think it's called)
-#  test:
-#    runs-on: ubuntu-latest
-#    environment: dev
-#    env:
-#      # secrets
-#      CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
-#      # variables
-#      CACHE_ORGS: ${{ vars.CACHE_ORGS }}
-#      CORS_ALLOWED_ORIGINS: ${{ vars.CORS_ALLOWED_ORIGINS }}
-#      DATABASE_NAME: ${{ vars.DATABASE_NAME }}
-#      DEFAULT_REGENERATION_INTERVAL_MINUTES: ${{ vars.DEFAULT_REGENERATION_INTERVAL_MINUTES }}
-#      DEVICEID_MAX_AGE_DAYS: ${{ vars.DEVICEID_MAX_AGE_DAYS }}
-#      HOST_NAME: ${{ vars.HOST_NAME }}
-#      JWT_EXPIRATION_SECONDS: ${{ vars.JWT_EXPIRATION_SECONDS }}
-#      KAZUKU_ENV: ${{ vars.KAZUKU_ENV }}
-#      MONGODB_URL: ${{ vars.MONGODB_URL }}
-#      PORT: ${{ vars.PORT }}
-#      REFRESH_EXPIRATION_DAYS: ${{ vars.REFRESH_EXPIRATION_DAYS }}
-#      SALT_WORK_FACTOR: ${{ vars.SALT_WORK_FACTOR }}
-#    steps:
-#      - name: Get code
-#        uses: actions/checkout@v4
-#      - name: Npm install
-#        working-directory: admin-api
-#        run: npm ci
-#      - name: Run tests
-#        id: run-tests
-#        working-directory: admin-api
-#        run: npm run test:ci
-#      - name: Upload test report on failure
-#        if: failure() && steps.run-tests.outcome == 'failure'
-#        uses: actions/upload-artifact@v4
-#        with:
-#          name: test-report
-#          path: ./admin-api/test-results.json
-
-
   build:
-#    needs: test
     runs-on: ubuntu-latest
     environment: dev
     steps:
-      - name: Use Node.js version 20
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
       - name: Get code
         uses: actions/checkout@v4
+      
       - name: Build docker image
         working-directory: admin-api
         run: docker build -t kazuku/kazuku-admin-api .
-      - name: echo some stuff
-        run: echo ${{ secrets.DOCKER_USERNAME }}
+
       - name: Login to Docker Hub
-        env:
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-        run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      
       - name: Push docker image to Docker Hub
         run: docker push kazuku/kazuku-admin-api
 
@@ -75,7 +33,14 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     environment: dev
+    # Add "id-token" with the intended permissions.
+    permissions:
+      contents: 'read'
+      id-token: 'write'
     steps:
+      - name: Get code
+        uses: actions/checkout@v4
+      
       - name: Authenticate with GCP
         id: 'auth'
         uses: google-github-actions/auth@v2
