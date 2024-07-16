@@ -19,10 +19,15 @@ spec:
             - name: MONGO_INITDB_DATABASE # .js files from the below dir will be executed by mongo using the database specified by MONGO_INITDB_DATABASE
               value: kazuku
           volumeMounts:
+            - name: admin-api-persistent-storage
+              mountPath: /data/db
             - name: mongo-init-volume
               mountPath: /docker-entrypoint-initdb.d # when a container is started for the first time, it will execute files with
                                                      #  a .js extension in the /docker-entrypoint-initdb.d directory
       volumes:
+        - name: admin-api-persistent-storage
+          persistentVolumeClaim:
+            claimName: admin-api-pvc
         - name: mongo-init-volume
           configMap:
             name: mongo-init-configmap

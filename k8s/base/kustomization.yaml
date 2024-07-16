@@ -6,4 +6,5 @@ resources:
   - ingress-svc.yaml
   - mongo-init-configmap.yaml
   - mongodb-deployment.yaml
-
+  - admin-api-pv.yaml
+  - admin-api-pvc.yaml
