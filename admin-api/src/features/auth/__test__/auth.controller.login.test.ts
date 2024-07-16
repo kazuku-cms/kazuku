@@ -50,6 +50,20 @@ describe('AuthController', () => {
         .send(user)
         .expect(400);
     });
+
+    it('should not return any sensitive information in the usercontext', async () => {
+      const user = {
+        email: testUtils.testUserEmail,
+        password: testUtils.testUserPassword
+      };
+      const response = await request(app)
+        .post(apiEndpoint)
+        .send(user)
+        .expect(200);
+
+      expect(response.body?.userContext?.user?._id).toBeUndefined();
+      expect(response.body?.userContext?.user?.password).toBeUndefined();
+    });
   });
 });
 

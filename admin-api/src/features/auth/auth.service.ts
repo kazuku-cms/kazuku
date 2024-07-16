@@ -38,7 +38,7 @@ export class AuthService extends GenericApiService<User> {
 
       // todo: save new lastLoggedIn date (non-blocking) - use an event or async call that we don't wait for
       //this.authService.updateLastLoggedIn(user);
-
+      this.transformSingle(userContext.user);
       loginResponse = new LoginResponse({ tokens: tokenResponse, userContext: { user: userContext.user, org } });
     }
 
@@ -255,26 +255,17 @@ export class AuthService extends GenericApiService<User> {
     return Date.now() + expiresInDays * 24 * 60 * 60 * 1000
   }
 
-  cleanUser(user: User) {
-    // Remove any sensitive information
-    delete user.password;
-    // if (user.facebook) {
-    //   delete user.facebook.token;
-    // }
-    // if (user.google) {
-    //   delete user.google.token;
-    // }
-  }
-
   transformList(users: User[]) {
+    super.transformList(users);
     return users.map((user) => {
-      this.cleanUser(user);
+      User.cleanUser(user);
       return user;
     });
   }
 
   transformSingle(user: User) {
-    this.cleanUser(user);
+    super.transformSingle(user);
+    User.cleanUser(user);
     return user;
   }
 

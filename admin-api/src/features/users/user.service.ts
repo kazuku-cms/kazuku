@@ -8,4 +8,18 @@ export class UserService extends GenericApiService<User> {
   constructor(db: Db) {
     super(db, 'users', 'user');
   }
+
+  transformList(users: User[]) {
+    super.transformList(users);
+    return users.map((user) => {
+      User.cleanUser(user);
+      return user;
+    });
+  }
+
+  transformSingle(user: User) {
+    super.transformSingle(user);
+    User.cleanUser(user);
+    return user;
+  }
 }
